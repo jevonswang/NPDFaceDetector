@@ -1,5 +1,5 @@
 # NPDFaceDetector
-It is an implementation of [A Fast and Accurate Unconstrained
+It is an C++ implementation of [A Fast and Accurate Unconstrained
 Face Detector](http://www.cbsr.ia.ac.cn/users/scliao/projects/npdface/), a paper on PAMI 2015
 
 

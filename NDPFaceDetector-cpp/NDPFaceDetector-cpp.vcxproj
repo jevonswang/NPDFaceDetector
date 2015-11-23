@@ -86,10 +86,12 @@
     <ClInclude Include="DetectFace.h" />
     <ClInclude Include="f2c.h" />
     <ClInclude Include="structs.h" />
+    <ClInclude Include="TrainDetector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DetectFace.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TrainDetector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
