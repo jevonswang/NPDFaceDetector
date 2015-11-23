@@ -4,5 +4,5 @@ Face Detector](http://www.cbsr.ia.ac.cn/users/scliao/projects/npdface/), a paper
 
 
 # License
-If you use my work, please cite my name (Binbin Xu), Thanks in advance.
+If you use my work, please cite my name (Zhefeng Wang), Thanks in advance.
 This project is released under the BSD 2-Clause license.
