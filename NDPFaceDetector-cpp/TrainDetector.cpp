@@ -2,7 +2,7 @@
 @Filename: TrainDetector.cpp
 @Author: Zhefeng Wang(jevons.wz@gmail.com)
 @Created on: 2015/11/23
-@Modified on: 2015/11/23
+@Modified on: 2015/11/24
 @Version: 1.0
 @desc:
 	Train a Nomalized Pixel Difference(NPD) based face detector.
@@ -27,18 +27,15 @@
 
 #include "TrainDetector.h"
 
+cv::Mat loadFaceDBFile(const string &faceDBFile){
 
+}
 
 
 NPDModel TrainDetector(string faceDBFile,
 	string nonfaceDBFile, string outFile, Options options){
 
 	NPDModel npdModel;
-
-
-
-
-
 
 	return npdModel;
 }

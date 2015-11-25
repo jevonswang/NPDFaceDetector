@@ -46,3 +46,11 @@ struct Options{
 
 	BoostOpt boostOpt; // see the comments above
 };
+
+struct NonFaceDB{
+	int numSamples;
+	int numNonfaceImgs;
+	cv::Mat NonfaceDB;
+	cv::Mat NonfaceImage1;
+	cv::Mat NonfaceImage2;
+};

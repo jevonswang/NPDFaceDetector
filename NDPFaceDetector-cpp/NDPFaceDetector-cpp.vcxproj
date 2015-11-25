@@ -85,11 +85,13 @@
     <ClInclude Include="clapack.h" />
     <ClInclude Include="DetectFace.h" />
     <ClInclude Include="f2c.h" />
+    <ClInclude Include="LoadMat.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="TrainDetector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DetectFace.cpp" />
+    <ClCompile Include="LoadMat.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TrainDetector.cpp" />
   </ItemGroup>

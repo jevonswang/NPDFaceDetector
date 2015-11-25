@@ -1,16 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include <opencv2/opencv.hpp>
 #include "structs.h"
 #include "DetectFace.h"
 #include "TrainDetector.h"
+#include "LoadMat.h"
 
 using namespace std;
-
-bool loadModelFile(NPDModel &npdModel, const string &filepath){
-	
-	return true;
-}
 
 void runTrain(){
 	Options options;
@@ -40,11 +37,11 @@ void runTrain(){
 }
 
 void runDetect(){
-	string modelFile = "model_frontal.mat";
+	string modelFile = "model_frontal.txt";
 	string imgFile = "lena.jpg";
 
 	NPDModel npdModel;
-	loadModelFile(npdModel, modelFile);
+	loadModelFile(modelFile, npdModel);
 
 	cv::Mat img = cv::imread(imgFile);
 	vector<cv::Rect> rects;
@@ -69,7 +66,14 @@ void runDetect(){
 }
 
 int main(int argc, char* argv[]){
+	
+	//string pathFaceDB = "";
+	//cv::Mat FaceDB;
+	NPDModel npdModel;
+	string modelFile = "model_frontal.txt";
+	loadModelFile(modelFile, npdModel);
 
+	/*
 	cout << "Press t to train model, press d to detect face.\n" << endl;
 	char ch;
 	cin >> ch;
@@ -82,6 +86,6 @@ int main(int argc, char* argv[]){
 	else{
 		cout << "bad input." << endl;
 	}
-
+	*/
 	return 0;
 }
