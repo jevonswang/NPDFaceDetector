@@ -5,7 +5,8 @@
 #include <vector>
 
 #include "structs.h"
+#include "NPDScan.h"
 
 using namespace std;
 
-bool DetectFace(vector<cv::Rect> &rects,const NPDModel &npdModel, const cv::Mat &img);
+bool DetectFace(vector<cv::Rect> &rects,NPDModel &npdModel, cv::Mat &img);

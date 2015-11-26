@@ -33,6 +33,9 @@
     <ClInclude Include="LoadMat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NPDScan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DetectFace.cpp">
@@ -45,6 +48,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LoadMat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NPDScan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

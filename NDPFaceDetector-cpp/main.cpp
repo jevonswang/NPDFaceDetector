@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <armadillo>
 #include <opencv2/opencv.hpp>
 #include "f2c.h"
 #include "clapack.h"
@@ -39,8 +40,10 @@ void runTrain(){
 }
 
 void runDetect(){
-	string modelFile = "model_frontal.txt";
-	string imgFile = "lena.jpg";
+
+
+	string modelFile = "E:\\model_frontal.txt";
+	string imgFile = "E:\\lena.jpg";
 
 	NPDModel npdModel;
 	loadModelFile(modelFile, npdModel);
@@ -48,7 +51,7 @@ void runDetect(){
 	cv::Mat img = cv::imread(imgFile);
 	vector<cv::Rect> rects;
 	DetectFace(rects, npdModel, img);
-
+	
 	int numFaces = rects.size();
 	printf("%d faces detected.\n", numFaces);
 
@@ -63,16 +66,14 @@ void runDetect(){
 		}
 	}
 	cv::imshow("result", img);
+	
 }
 
 int main(int argc, char* argv[]){
 	
-	//string pathFaceDB = "";
-	//cv::Mat FaceDB;
-	NPDModel npdModel;
-	string modelFile = "E:\\Project Files\\NDPFaceDetector-cpp\\Release\\model_frontal.txt";
-	loadModelFile(modelFile, npdModel);
 
+
+	runDetect();
 	/*
 	cout << "Press t to train model, press d to detect face.\n" << endl;
 	char ch;

@@ -48,6 +48,13 @@ struct Options{
 	BoostOpt boostOpt; // see the comments above
 };
 
+struct Candi_rects{
+	int row;
+	int col;
+	int size;
+	double score;
+};
+
 struct NonFaceDB{
 	int numSamples;
 	int numNonfaceImgs;
