@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>
+#include "f2c.h"
+#include "clapack.h"
 #include "structs.h"
 #include "DetectFace.h"
 #include "TrainDetector.h"
@@ -60,9 +62,7 @@ void runDetect(){
 			cv::rectangle(img, rects[j], cv::Scalar::all(0), border);
 		}
 	}
-
 	cv::imshow("result", img);
-
 }
 
 int main(int argc, char* argv[]){
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
 	//string pathFaceDB = "";
 	//cv::Mat FaceDB;
 	NPDModel npdModel;
-	string modelFile = "model_frontal.txt";
+	string modelFile = "E:\\Project Files\\NDPFaceDetector-cpp\\Release\\model_frontal.txt";
 	loadModelFile(modelFile, npdModel);
 
 	/*

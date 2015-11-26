@@ -2,6 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <armadillo>
 
 // the struct of NPD model
 struct NPDModel{
@@ -9,18 +10,18 @@ struct NPDModel{
 	int numStages;
 	int numBranchNodes;
 	int numLeafNodes;
-	cv::Mat stageThreshold;
-	cv::Mat  treeRoot;
-	cv::Mat  pixel1;
-	cv::Mat  pixel2;
-	cv::Mat  cutpoint;
-	cv::Mat  leftChild;
-	cv::Mat  rightChild;
-	cv::Mat  fit;
-	cv::Mat  npdTable;
+	arma::mat stageThreshold;
+	arma::mat  treeRoot;
+	arma::mat  pixel1;
+	arma::mat  pixel2;
+	arma::mat  cutpoint;
+	arma::mat  leftChild;
+	arma::mat  rightChild;
+	arma::mat  fit;
+	arma::mat  npdTable;
 	double scaleFactor;
 	int numScales;
-	cv::Mat  winSize;
+	arma::mat  winSize;
 };
 
 struct BoostOpt{
