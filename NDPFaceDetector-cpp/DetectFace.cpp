@@ -1,13 +1,16 @@
 #include "DetectFace.h"
 
-bool Logistic(arma::uvec &candi_rects_score, arma::uvec &weight){
+bool Logistic(arma::vec &candi_rects_score, arma::vec &weight){
+	weight = arma::log(1 + arma::exp(candi_rects_score));
+	/*
 	for (int i = 0; i < candi_rects_score.n_elem; i++){
 		weight[i] = log(1 + exp(candi_rects_score[i]));
 	}
+	*/
 }
 
 bool DetectFace(
-	vector<cv::Rect> &rects, 
+	arma::mat &rects, 
 	NPDModel &npdModel, 
 	cv::Mat &img){
 
@@ -63,58 +66,88 @@ bool DetectFace(
 	}
 
 	// merge nearby detections
-	arma::mat label;
+	arma::uvec label;
 	Partition(predicate,label,numCandidates);
 
-	arma::uvec rects_row, rects_col, rects_size, rects_score, rects_neighbors;
-	rects_row.zeros(numCandidates, 1);
-	rects_col.zeros(numCandidates, 1);
-	rects_size.zeros(numCandidates, 1);
-	rects_score.zeros(numCandidates, 1);
-	rects_neighbors.zeros(numCandidates, 1);
-
+	rects.zeros(numCandidates, 5);
 
 	for (int i = 0; i < numCandidates; i++){
+
 		arma::uvec index = arma::find(label == i);
 
-		arma::uvec candi_rects_score(index);
-		for (int j = 0; j < index.n_elem; j++){
-			candi_rects_score[j] = candi_rects[j].score;
-		}
-		
-		candi_rects(index).col(5);
+		// matlab: weight = Logistic([candi_rects(index).score]');
+		arma::mat candi_rects_index = candi_rects(index);
+		arma::vec candi_rects_index_score = candi_rects_index.col(3);
+		arma::vec weight;
+		Logistic(candi_rects_index_score, weight);
 
+		rects(i, 3) = arma::sum(weight); // scores
+		rects(i, 4) = index.n_elem;  // neighbors
 
-		arma::uvec weight(candi_rects);
-		Logistic(candi_rects_score, weight);
-		rects_score[i] = arma::sum(weight);
-		rects_neighbors[i] = index.n_elem;
-
-		if (0 == rects_score[i]){
+		if (0 == arma::sum(weight)){
 			int n_elem = weight.n_elem;
-			weight.ones();
+			weight.ones(n_elem,1);
 			weight = weight / n_elem;
 		}
 		else{
 			weight = weight / arma::sum(weight);
 		}
 
-		rects_size[i] = floor([candi_rects(index).size] * weight);
-		rects_col[i] = floor(([candi_rects(index).col] + [candi_rects(index).size] / 2) * weight - rects(i).size / 2);
-		rects_row[i] = floor(([candi_rects(index).row] + [candi_rects(index).size] / 2) * weight - rects(i).size / 2);
+		rects(i, 2) = floor(candi_rects_index.col(2) * weight);
+		rects(i, 1) = floor(([candi_rects(index).col] + [candi_rects(index).size] / 2) * weight - rects(i,2) / 2);
+		rects(i, 0) = floor(([candi_rects(index).row] + [candi_rects(index).size] / 2) * weight - rects(i,2) / 2);
 	}
 
+	// find embeded rectangles
+	predicate.zeros(numCandidates);
 
+	for (int i = 0; i < numCandidates; i++){
+		for (int j = i + 1; j < numCandidates; j++){
+			h = min(rects(i, 0) + rects(i, 2), rects(j, 0) + rects(j, 2))
+				- max(rects(i, 0), rects(j, 0));
+			w = min(rects(i, 1) + rects(i, 2), rects(j, 1) + rects(j, 2))
+				- max(rects(i, 1), rects(j, 1));
+			s = max(h, 0) * max(w, 0);
 
+			if ((s / (rects(i, 2) * rects(i, 2)) >= overlappingThreshold) || s /(rects(j,2)*rects(j,2)) ){
+				predicate(i, j) = 1;
+				predicate(j, i) = 1;
+			}
+		}
+	}
 
+	arma::mat flag;
+	flag.ones(numCandidates,1);
 
+	// merge embeded rectangles
+	for (int i = 0; i < numCandidates; i++){
+		arma::uvec index = arma::find(predicate.col(i));
+		if (index.is_empty){
+			continue;
+		}
 
+		double s = arma::max((arma::mat)rects(index).col(3));
+		if (s>rects(i, 3)){
+			flag(i) = 0;
+		}
+	}
 
+	rects = rects(flag);
 
+	// check borders
+	int height = img.rows;
+	int width = img.cols;
+	int numFaces = rects.n_rows;
 
+	for (int i = 0; i < numFaces; i++){
+		if (rects(i, 0) < 1){
+			rects(i, 0) = 1;
+		}
+		if (rects(i, 1) < 1){
+			rects(i, 1) = 1;
+		}
 
-
-
+	}
 
 	return true;
 }

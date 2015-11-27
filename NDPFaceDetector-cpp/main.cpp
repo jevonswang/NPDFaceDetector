@@ -49,7 +49,7 @@ void runDetect(){
 	loadModelFile(modelFile, npdModel);
 
 	cv::Mat img = cv::imread(imgFile);
-	vector<cv::Rect> rects;
+	arma::mat rects;
 	DetectFace(rects, npdModel, img);
 	
 	int numFaces = rects.size();

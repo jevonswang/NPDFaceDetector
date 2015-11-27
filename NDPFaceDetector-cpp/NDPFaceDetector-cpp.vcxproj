@@ -87,6 +87,7 @@
     <ClInclude Include="f2c.h" />
     <ClInclude Include="LoadMat.h" />
     <ClInclude Include="NPDScan.h" />
+    <ClInclude Include="Partition.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="TrainDetector.h" />
   </ItemGroup>
@@ -95,6 +96,7 @@
     <ClCompile Include="LoadMat.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NPDScan.cpp" />
+    <ClCompile Include="Partition.cpp" />
     <ClCompile Include="TrainDetector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
