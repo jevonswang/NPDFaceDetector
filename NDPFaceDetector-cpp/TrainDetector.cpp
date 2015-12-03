@@ -28,7 +28,8 @@
 #include "TrainDetector.h"
 
 cv::Mat loadFaceDBFile(const string &faceDBFile){
-
+	cv::Mat mat;
+	return mat;
 }
 
 

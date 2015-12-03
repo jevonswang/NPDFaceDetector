@@ -1,8 +1,9 @@
 #include "NPDScan.h"
 
 //void NDPScan(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
-bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int minFace, int maxFace, int numThreads){
+bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int minFace=40, int maxFace=3000, int numThreads=4){
 
+	/*
 	candi_rects
 		<< 345 << 291 << 29 << 8.72495 << arma::endr
 		<< 343 << 289 << 35 << 7.31841 << arma::endr
@@ -36,76 +37,56 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int
 		<< 239 << 239 << 149 << 8.59414 << arma::endr
 		<< 233 << 225 << 178 << 8.12269 << arma::endr
 		<< 225 << 233 << 178 << 9.48288 << arma::endr;
+	*/
+
 	
 
-
-	/*
-	int minFace = 40;
-	int maxFace = 3000;
-
-	if (nrhs >= 3 && mxGetScalar(prhs[2]) > 0) minFace = (int)mxGetScalar(prhs[2]);
-	if (nrhs >= 4 && mxGetScalar(prhs[3]) > 0) maxFace = (int)mxGetScalar(prhs[3]);
-
+	
 	// Set the number of threads
-	int numProcs = omp_get_num_procs();
-	int numThreads = numProcs;
-
-	if (nrhs >= 5 && mxGetScalar(prhs[4]) > 0) numThreads = (int)mxGetScalar(prhs[4]);
-
+	//int numProcs = omp_get_num_procs();
+	int numProcs = 4;
 	if (numThreads > numProcs) numThreads = numProcs;
-	omp_set_num_threads(numThreads);
+
+
+
+	//omp_set_num_threads(numThreads);
 	//printf("minFace=%d, maxFace=%d, numThreads=%d\n", minFace, maxFace, numThreads);
 
-	// get input pointers
-	const mxArray *pModel = prhs[0];
+
 
 	// get the NPD detector
-	int objSize = (int)mxGetScalar(mxGetField(pModel, 0, "objSize"));
-	int numStages = (int)mxGetScalar(mxGetField(pModel, 0, "numStages"));
-	//int numLeafNodes = (int) mxGetScalar(mxGetField(pModel, 0, "numLeafNodes"));
-	int numBranchNodes = (int)mxGetScalar(mxGetField(pModel, 0, "numBranchNodes"));
-	const float *pStageThreshold = (float *)mxGetData(mxGetField(pModel, 0, "stageThreshold"));
-	const int *pTreeRoot = (int *)mxGetData(mxGetField(pModel, 0, "treeRoot"));
+	int objSize = npdModel.objSize;
+	int numStages = npdModel.numStages;
+	//int numLeafNodes = npdModel.numLeafNodes;
+	int numBranchNodes = npdModel.numBranchNodes;
+	arma::vec stageThreshold = npdModel.stageThreshold;
+	arma::uvec treeRoot = npdModel.treeRoot;
 
-	int numScales = (int)mxGetScalar(mxGetField(pModel, 0, "numScales"));
-	vector<int *> ppPoints1(numScales);
-	vector<int *> ppPoints2(numScales);
-	ppPoints1[0] = (int *)mxGetData(mxGetField(pModel, 0, "pixel1"));
-	ppPoints2[0] = (int *)mxGetData(mxGetField(pModel, 0, "pixel2"));
-	for (int i = 1; i < numScales; i++)
-	{
-		ppPoints1[i] = ppPoints1[i - 1] + numBranchNodes;
-		ppPoints2[i] = ppPoints2[i - 1] + numBranchNodes;
-	}
+	int numScales = npdModel.numScales;
+	
+	arma::umat pixel1 = npdModel.pixel1;
+	arma::umat pixel2 = npdModel.pixel2;
 
-	const unsigned char* ppCutpoint[2];
-	ppCutpoint[0] = (unsigned char *)mxGetData(mxGetField(pModel, 0, "cutpoint"));
-	ppCutpoint[1] = ppCutpoint[0] + numBranchNodes;
+	arma::umat cutpoint = npdModel.cutpoint;
 
-	const int *pLeftChild = (int *)mxGetData(mxGetField(pModel, 0, "leftChild"));
-	const int *pRightChild = (int *)mxGetData(mxGetField(pModel, 0, "rightChild"));
-	const float *pFit = (float *)mxGetData(mxGetField(pModel, 0, "fit"));
+	arma::uvec leftChild = npdModel.leftChild;
+	arma::uvec rightChild = npdModel.rightChild;
+	arma::vec fit = npdModel.fit;
 
-	vector<unsigned char *> ppNpdTable(256);
-	ppNpdTable[0] = (unsigned char *)mxGetData(mxGetField(pModel, 0, "npdTable"));
-	for (int i = 1; i < 256; i++) ppNpdTable[i] = ppNpdTable[i - 1] + 256;
+	arma::umat npdTable = npdModel.npdTable;
 
-	//double scaleFactor = mxGetScalar(mxGetField(pModel, 0, "scaleFactor"));
-	const int *pWinSize = (int *)mxGetData(mxGetField(pModel, 0, "winSize"));
+	//double scaleFactor = npdModel.scaleFactor;
+	arma::uvec winSize = npdModel.winSize;
 
-	int height = (int)mxGetM(prhs[1]);
-	int width = (int)mxGetN(prhs[1]);
-	const unsigned char *I = (unsigned char *)mxGetData(prhs[1]);
+	int height = I.n_rows;
+	int width = I.n_cols;
 
 	minFace = max(minFace, objSize);
 	maxFace = min(maxFace, min(height, width));
 
 	if (min(height, width) < minFace)
 	{
-		// create a structure vector for the output data
-		const char* field_names[] = { "row", "col", "size", "score" };
-		plhs[0] = mxCreateStructMatrix(0, 1, 4, field_names);
-		return;
+		return true;
 	}
 
 	// containers for the detected faces
@@ -113,21 +94,21 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int
 
 	for (int k = 0; k < numScales; k++) // process each scale
 	{
-		if (pWinSize[k] < minFace) continue;
-		else if (pWinSize[k] > maxFace) break;
+		if (winSize[k] < minFace) continue;
+		else if (winSize[k] > maxFace) break;
 
 		// determine the step of the sliding subwindow
-		int winStep = (int)floor(pWinSize[k] * 0.1);
-		if (pWinSize[k] > 40) winStep = (int)floor(pWinSize[k] * 0.05);
+		int winStep = (int)floor(winSize[k] * 0.1);
+		if (winSize[k] > 40) winStep = (int)floor(winSize[k] * 0.05);
 
 		// calculate the offset values of each pixel in a subwindow
 		// pre-determined offset of pixels in a subwindow
-		vector<int> offset(pWinSize[k] * pWinSize[k]);
-		int p1 = 0, p2 = 0, gap = height - pWinSize[k];
+		vector<int> offset(winSize[k] * winSize[k]);
+		int p1 = 0, p2 = 0, gap = height - winSize[k];
 
-		for (int j = 0; j < pWinSize[k]; j++) // column coordinate
+		for (int j = 0; j < winSize[k]; j++) // column coordinate
 		{
-			for (int i = 0; i < pWinSize[k]; i++) // row coordinate
+			for (int i = 0; i < winSize[k]; i++) // row coordinate
 			{
 				offset[p1++] = p2++;
 			}
@@ -135,17 +116,19 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int
 			p2 += gap;
 		}
 
-		int colMax = width - pWinSize[k] + 1;
-		int rowMax = height - pWinSize[k] + 1;
+		int colMax = width - winSize[k] + 1;
+		int rowMax = height - winSize[k] + 1;
 
-#pragma omp parallel for //private(c, pPixel, r, treeIndex, _score, s, node, p1, p2, fea, _row, _col, _size)
+		cutpoint.print("cutpoint");
+
+//#pragma omp parallel for //private(c, pPixel, r, treeIndex, _score, s, node, p1, p2, fea, _row, _col, _size)
 
 		// process each subwindow
 		for (int c = 0; c < colMax; c += winStep) // slide in column
 		{
-			const unsigned char *pPixel = I + c * height;
+			//const unsigned char *pPixel = I + c * height;
 
-			for (int r = 0; r < rowMax; r += winStep, pPixel += winStep) // slide in row
+			for (int r = 0; r < rowMax; r += winStep) // slide in row
 			{
 				int treeIndex = 0;
 				float _score = 0;
@@ -154,36 +137,50 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int
 				// test each tree classifier
 				for (s = 0; s < numStages; s++)
 				{
-					int node = pTreeRoot[treeIndex];
+					int node = treeRoot[treeIndex];
+
+					cout << cutpoint(node, 0) << " " << cutpoint(node, 1) << endl;
 
 					// test the current tree classifier
 					while (node > -1) // branch node
 					{
-						unsigned char p1 = pPixel[offset[ppPoints1[k][node]]];
-						unsigned char p2 = pPixel[offset[ppPoints2[k][node]]];
-						unsigned char fea = ppNpdTable[p1][p2];
-						//printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(ppCutpoint[0][node]), int(ppCutpoint[1][node]));
+						//unsigned char p1 = pPixel[offset[pixel1(node,k)]];
+						//unsigned char p2 = pPixel[offset[pixel2(node,k)]];
+						printf("Hello world\n");
 
-						if (fea < ppCutpoint[0][node] || fea > ppCutpoint[1][node]) node = pLeftChild[node];
-						else node = pRightChild[node];
+						unsigned char p1 = I(r + offset[pixel1(node, k)], c);
+						unsigned char p2 = I(r + offset[pixel2(node, k)], c);
+						unsigned char fea = npdTable(p1, p2);
+
+						printf("Hello world\n");
+						printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(cutpoint(node,0)), int(cutpoint(node,1)));
+	
+						cout << "node:" << node << endl;
+						
+						if (fea < cutpoint(node, 0)) 
+							node = leftChild[node];
+						else if (fea > cutpoint(node, 1))
+							node = leftChild[node];
+						else {
+							node = rightChild[node];
+						}
 					}
 
 					// leaf node
 					node = -node - 1;
-					_score = _score + pFit[node];
+					_score = _score + fit[node];
 					treeIndex++;
 
-					//printf("stage = %d, score = %f\n", s, _score);
-					if (_score < pStageThreshold[s]) break; // negative samples
+					printf("stage = %d, score = %f\n", s, _score);
+					if (_score < stageThreshold[s]) break; // negative samples
 				}
 
 				if (s == numStages) // a face detected
 				{
 					double _row = r + 1;
 					double _col = c + 1;
-					double _size = pWinSize[k];
+					double _size = winSize[k];
 
-#pragma omp critical // modify the record by a single thread
 					{
 						row.push_back(_row);
 						col.push_back(_col);
@@ -195,35 +192,20 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> I, int
 		}
 	}
 
+
+
+
 	int numFaces = (int)row.size();
-
-	// create a structure vector for the output data
-	const char* field_names[] = { "row", "col", "size", "score" };
-	plhs[0] = mxCreateStructMatrix(numFaces, 1, 4, field_names);
-
-	if (numFaces == 0) return;
-
-	mxArray *temp;
-
-	// asign the output data
-	for (int i = 0; i < numFaces; i++)
-	{
-		temp = mxCreateDoubleMatrix(1, 1, mxREAL);
-		*mxGetPr(temp) = row[i];
-		mxSetField(plhs[0], i, "row", temp);
-
-		temp = mxCreateDoubleMatrix(1, 1, mxREAL);
-		*mxGetPr(temp) = col[i];
-		mxSetField(plhs[0], i, "col", temp);
-
-		temp = mxCreateDoubleMatrix(1, 1, mxREAL);
-		*mxGetPr(temp) = size[i];
-		mxSetField(plhs[0], i, "size", temp);
-
-		temp = mxCreateDoubleMatrix(1, 1, mxREAL);
-		*mxGetPr(temp) = score[i];
-		mxSetField(plhs[0], i, "score", temp);
+	if (numFaces == 0) return true;
+	candi_rects.set_size(numFaces,4);
+	for (int i = 0; i < numFaces; i++){
+		candi_rects(i, 0) = row.at(i);
+		candi_rects(i, 1) = col.at(i);
+		candi_rects(i, 2) = size.at(i);
+		candi_rects(i, 3) = score.at(i);
 	}
-	*/
+
+	candi_rects.print("candi_rects:");
+
 	return true;
 }

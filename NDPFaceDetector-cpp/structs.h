@@ -10,18 +10,18 @@ struct NPDModel{
 	int numStages;
 	int numBranchNodes;
 	int numLeafNodes;
-	arma::mat stageThreshold;
-	arma::mat  treeRoot;
-	arma::mat  pixel1;
-	arma::mat  pixel2;
-	arma::mat  cutpoint;
-	arma::mat  leftChild;
-	arma::mat  rightChild;
-	arma::mat  fit;
-	arma::mat  npdTable;
+	arma::vec stageThreshold;
+	arma::uvec  treeRoot;
+	arma::umat  pixel1;
+	arma::umat  pixel2;
+	arma::umat  cutpoint;
+	arma::uvec  leftChild;
+	arma::uvec  rightChild;
+	arma::vec  fit;
+	arma::umat  npdTable;
 	double scaleFactor;
 	int numScales;
-	arma::mat  winSize;
+	arma::uvec  winSize;
 };
 
 struct BoostOpt{

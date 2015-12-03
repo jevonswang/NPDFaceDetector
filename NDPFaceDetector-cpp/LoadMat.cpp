@@ -23,6 +23,75 @@ bool loadMat(ifstream &in, arma::mat &M){
 	return true;
 }
 
+bool loadMat(ifstream &in, arma::umat &M){
+
+	string line;
+	int row, col;
+	istringstream ss;
+	string tmpStr;
+
+	// get stageThreshold
+	getline(in, line);
+	ss.clear();
+	ss.str(line);
+	ss >> row >> col;
+	//cout << row << " " << col << endl;
+	for (int i = 0; i < row; i++){
+		getline(in, line);
+		tmpStr += line + ";";
+	}
+	M = tmpStr;
+
+	//cout << arma::size(M) << endl;
+	return true;
+}
+
+bool loadMat(ifstream &in, arma::uvec &M){
+
+	string line;
+	int row, col;
+	istringstream ss;
+	string tmpStr;
+
+	// get stageThreshold
+	getline(in, line);
+	ss.clear();
+	ss.str(line);
+	ss >> row >> col;
+	//cout << row << " " << col << endl;
+	for (int i = 0; i < row; i++){
+		getline(in, line);
+		tmpStr += line + " ";
+	}
+	M = tmpStr;
+
+	//cout << arma::size(M) << endl;
+	return true;
+}
+
+bool loadMat(ifstream &in, arma::vec &M){
+
+	string line;
+	int row, col;
+	istringstream ss;
+	string tmpStr;
+
+	// get stageThreshold
+	getline(in, line);
+	ss.clear();
+	ss.str(line);
+	ss >> row >> col;
+	//cout << row << " " << col << endl;
+	for (int i = 0; i < row; i++){
+		getline(in, line);
+		tmpStr += line + " ";
+	}
+	M = tmpStr;
+
+	//cout << arma::size(M) << endl;
+	return true;
+}
+
 bool loadModelFile(string &modelFile, NPDModel &npdModel){
 
 	ifstream in(modelFile.c_str(), ios_base::in);
@@ -54,6 +123,7 @@ bool loadModelFile(string &modelFile, NPDModel &npdModel){
 	loadMat(in, npdModel.fit);
 	loadMat(in, npdModel.npdTable);
 	loadMat(in, npdModel.winSize);
+	
 
 	return true;
 }
