@@ -62,3 +62,4 @@ struct NonFaceDB{
 	cv::Mat NonfaceImage1;
 	cv::Mat NonfaceImage2;
 };
+

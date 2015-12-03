@@ -53,10 +53,10 @@
     <ClCompile Include="LoadMat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NPDScan.cpp">
+    <ClCompile Include="Partition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Partition.cpp">
+    <ClCompile Include="NPDScan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

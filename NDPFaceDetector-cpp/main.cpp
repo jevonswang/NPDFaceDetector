@@ -60,10 +60,11 @@ void runDetect(){
 		if (border < 2){
 			border = 2;
 		}
-
+		/*
 		for (int j = 0; j < numFaces; j++){
 			cv::rectangle(img, rects[j], cv::Scalar::all(0), border);
 		}
+		*/
 	}
 	cv::imshow("result", img);
 	

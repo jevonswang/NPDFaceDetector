@@ -1,5 +1,6 @@
 #include "DetectFace.h"
 
+
 bool Logistic(arma::vec &candi_rects_score, arma::vec &weight){
 	weight = arma::log(1 + arma::exp(candi_rects_score));
 	/*
@@ -9,10 +10,7 @@ bool Logistic(arma::vec &candi_rects_score, arma::vec &weight){
 	*/
 }
 
-bool DetectFace(
-	arma::mat &rects, 
-	NPDModel &npdModel, 
-	cv::Mat &img){
+bool DetectFace(arma::mat &rects, NPDModel &npdModel, cv::Mat &img){
 
 	// initialize parameters
 	int minFace = 20;
@@ -35,15 +33,17 @@ bool DetectFace(
 
 	// get candidate rects
 	arma::mat candi_rects;// col[0]:row,col[1]:col,col[2]:size,col[3]:score 
-	NPDScan(candi_rects,npdModel, armaImg, minFace, maxFace, numThreads);
+	NPDScan(candi_rects, npdModel, armaImg, minFace, maxFace, numThreads);
 
-	
+	candi_rects.print("candi_rects:");
+
 	int numCandidates = rects.size();
 	if (0 == numCandidates){
 		rects.clear();
 		return true;
 	}
 
+	/*
 	arma::mat predicate = arma::eye<arma::mat>(numCandidates,numCandidates);
 	// i and j belong to the same group if predicate(i,j) = 1
 
@@ -148,7 +148,6 @@ bool DetectFace(
 		}
 
 	}
-
+	*/
 	return true;
 }
-
