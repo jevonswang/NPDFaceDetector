@@ -4,5 +4,6 @@
 #include <opencv2/opencv.hpp>
 
 #include "structs.h"
+using namespace std;
 
-bool Partition(arma::mat &predicate, arma::uvec &label, int &numCandidates);
+bool Partition(arma::mat &A, arma::uvec &label, int &nGroups);

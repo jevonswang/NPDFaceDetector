@@ -13,4 +13,4 @@
 
 using namespace std;
 
-bool DetectFace(arma::mat &rects,NPDModel &npdModel, cv::Mat &img);
+bool DetectFace(vector<cv::Rect> &rects, NPDModel &npdModel, cv::Mat &img);

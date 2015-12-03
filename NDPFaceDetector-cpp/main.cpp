@@ -49,7 +49,7 @@ void runDetect(){
 	loadModelFile(modelFile, npdModel);
 
 	cv::Mat img = cv::imread(imgFile);
-	arma::mat rects;
+	vector<cv::Rect> rects;
 	DetectFace(rects, npdModel, img);
 	
 	int numFaces = rects.size();
@@ -60,13 +60,14 @@ void runDetect(){
 		if (border < 2){
 			border = 2;
 		}
-		/*
+		
 		for (int j = 0; j < numFaces; j++){
-			cv::rectangle(img, rects[j], cv::Scalar::all(0), border);
+			cv::rectangle(img, rects[j], cv::Scalar(0,255,0), border);
 		}
-		*/
+		
 	}
 	cv::imshow("result", img);
+	cv::waitKey();
 	
 }
 
