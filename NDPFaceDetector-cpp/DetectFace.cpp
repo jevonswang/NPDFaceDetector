@@ -30,8 +30,8 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 	arma::inplace_trans(armaImg);
 
 	// compare whether I equals grayImg
-	//I(0,0,arma::size(10,10)).print("I=");
-	//cout << grayImg(cv::Range(0, 10), cv::Range(0, 10)) << endl;
+	armaImg(0,0,arma::size(10,10)).print("armaImg=");
+	cout << grayImg(cv::Range(0, 10), cv::Range(0, 10)) << endl;
 
 	// get candidate rects
 	arma::mat candi_rects;// col[0]:row,col[1]:col,col[2]:size,col[3]:score 
