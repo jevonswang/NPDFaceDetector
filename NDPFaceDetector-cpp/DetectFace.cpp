@@ -93,7 +93,6 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 		arma::vec candi_rects_index_score = candi_rects_index.col(3);
 		arma::vec weight;
 
-		candi_rects_index_score.print();
 
 		Logistic(candi_rects_index_score, weight);
 
@@ -127,7 +126,7 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 		ans = (candi_rects_index.col(0) + candi_rects_index.col(2) / 2).t() * weight - rects(i,2) / 2;
 		rects(i, 0) = floor(ans(0,0));
 		
-		cout << "i: " << i << endl;
+		//cout << "i: " << i << endl;
 		//rects.print("rects:");
 	}
 

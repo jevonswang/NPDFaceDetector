@@ -42,8 +42,9 @@ void runTrain(){
 void runDetect(){
 
 
-	string modelFile = "E:\\model_frontal.txt";
-	string imgFile = "E:\\lena.jpg";
+	string modelFile = "F:\\NDPData\\model\\model_frontal.txt";
+	//string modelFile = "F:\\NDPData\\model\\model_unconstrain.txt";
+	string imgFile = "F:\\NDPData\\images\\lena.jpg";
 
 	NPDModel npdModel;
 	loadModelFile(modelFile, npdModel);
@@ -68,7 +69,6 @@ void runDetect(){
 	}
 	cv::imshow("result", img);
 	cv::waitKey();
-	
 }
 
 int main(int argc, char* argv[]){

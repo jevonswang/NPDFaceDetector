@@ -42,12 +42,10 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	
 	// Set the number of threads
 	//int numProcs = omp_get_num_procs();
-	int numProcs = 4;
+	int numProcs = omp_get_num_procs();
 	if (numThreads > numProcs) numThreads = numProcs;
+	omp_set_num_threads(numThreads);
 
-
-
-	//omp_set_num_threads(numThreads);
 	//printf("minFace=%d, maxFace=%d, numThreads=%d\n", minFace, maxFace, numThreads);
 
 
@@ -90,20 +88,18 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	// get pixel1 and pixel2
 	vector<int *> ppPoints1(numScales);
 	vector<int *> ppPoints2(numScales);
-	arma::umat pixel1 = npdModel.pixel1.t();
-	arma::umat pixel2 = npdModel.pixel2.t();
-	ppPoints1[0] = (int *)pixel1.memptr();
-	ppPoints2[0] = (int *)pixel2.memptr();
+	ppPoints1[0] = (int *)npdModel.pixel1.memptr();
+	ppPoints2[0] = (int *)npdModel.pixel2.memptr();
 	for (int i = 1; i < numScales; i++)
 	{
 		ppPoints1[i] = ppPoints1[i - 1] + numBranchNodes;
 		ppPoints2[i] = ppPoints2[i - 1] + numBranchNodes;
 	}
 
+
 	// get cutpoint
 	const int* ppCutpoint[2];
-	arma::umat cutpoint = npdModel.cutpoint.t();
-	ppCutpoint[0] = (int *)cutpoint.memptr();
+	ppCutpoint[0] = (int *)npdModel.cutpoint.memptr();
 	ppCutpoint[1] = ppCutpoint[0] + numBranchNodes;
 
 	// get leftChild, rightChild and fit
@@ -113,8 +109,8 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 
 	// get npdTable
 	vector<int *> ppNpdTable(256);
-	arma::umat npdTable = npdModel.npdTable.t();
-	ppNpdTable[0] = (int *)npdTable.memptr();
+	//arma::umat npdTable = npdModel.npdTable.t();
+	ppNpdTable[0] = (int *)npdModel.npdTable.memptr();
 	for (int i = 1; i < 256; i++) ppNpdTable[i] = ppNpdTable[i - 1] + 256;
 
 	// get scaleFactor
@@ -140,6 +136,7 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	// containers for the detected faces
 	vector<double> row, col, size, score;
 
+	//int count = 0;
 	for (int k = 0; k < numScales; k++) // process each scale
 	{
 		if (pWinSize[k] < minFace) continue;
@@ -164,10 +161,20 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 			p2 += gap;
 		}
 
+		/*
+		// offset is okay
+		if (count == 0){
+			for (int i = 0; i < offset.size(); i++){
+				printf("%d:%d\n",i,offset[i]);
+			}
+			count++;
+		}
+		*/
+
 		int colMax = width - pWinSize[k] + 1;
 		int rowMax = height - pWinSize[k] + 1;
 
-	//#pragma omp parallel for //private(c, pPixel, r, treeIndex, _score, s, node, p1, p2, fea, _row, _col, _size)
+		#pragma omp parallel for //private(c, pPixel, r, treeIndex, _score, s, node, p1, p2, fea, _row, _col, _size)
 
 		// process each subwindow
 		for (int c = 0; c < colMax; c += winStep) // slide in column
@@ -188,16 +195,21 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 					// test the current tree classifier
 					while (node > -1) // branch node
 					{
-						cout << ppPoints1[k][node] << endl;
-						cout << ppPoints2[k][node] << endl;
-
-						cout << offset[ppPoints1[k][node]] << endl;
-						cout << offset[ppPoints2[k][node]] << endl;
-
 						unsigned char p1 = pPixel[offset[ppPoints1[k][node]]];
 						unsigned char p2 = pPixel[offset[ppPoints2[k][node]]];
 						unsigned char fea = ppNpdTable[p1][p2];
 						//printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(ppCutpoint[0][node]), int(ppCutpoint[1][node]));
+
+						/*
+						// for test
+						if (count < 10){
+							printf("%d: ppPoints1[%d][%d]=%d  ", count, k, node, ppPoints1[k][node]);
+							printf("offset[ppPoints1[k][node]]=%d  ", offset[ppPoints1[k][node]]);
+							printf("pPixel[offset[ppPoints1[k][node]]]=%d .\n", pPixel[offset[ppPoints1[k][node]]]);
+							//printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(ppCutpoint[0][node]), int(ppCutpoint[1][node]));
+							count++;
+						}
+						*/
 
 						if (fea < ppCutpoint[0][node] || fea > ppCutpoint[1][node]) node = pLeftChild[node];
 						else node = pRightChild[node];
@@ -218,13 +230,13 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 					double _col = c + 1;
 					double _size = pWinSize[k];
 
-	//#pragma omp critical // modify the record by a single thread
-					
-					row.push_back(_row);
-					col.push_back(_col);
-					size.push_back(_size);
-					score.push_back(_score);
-					
+					//#pragma omp critical // modify the record by a single thread
+					{
+						row.push_back(_row);
+						col.push_back(_col);
+						size.push_back(_size);
+						score.push_back(_score);
+					}
 				}
 			}
 		}

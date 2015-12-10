@@ -10,10 +10,10 @@ struct NPDModel{
 	int numStages;
 	int numBranchNodes;
 	int numLeafNodes;
-	arma::vec stageThreshold;
+	arma::vec stageThreshold; // okay
 	arma::uvec  treeRoot;
-	arma::umat  pixel1;
-	arma::umat  pixel2;
+	arma::umat  pixel1; // okay
+	arma::umat  pixel2; // okay
 	arma::umat  cutpoint;
 	arma::uvec  leftChild;
 	arma::uvec  rightChild;
