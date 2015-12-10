@@ -21,12 +21,19 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 	int numThreads = 24;
 
 	// trun the img to gray
-	cv::Mat grayImg;
-	grayImg.create(img.size(),img.type());
-	cvtColor(img,grayImg,cv::COLOR_RGB2GRAY);
+	cv::Mat grayImg(img.size(),CV_8UC1);
+	//cvtColor(img,grayImg,cv::COLOR_RGB2GRAY);
+	for (int i = 0; i < img.rows; i++){
+		for (int j = 0; j < img.cols; j++){
+			double value = 0.2989 * img.at<cv::Vec3b>(i, j)[2] 
+						 + 0.5870 * img.at<cv::Vec3b>(i, j)[1] 
+						 + 0.1140 * img.at<cv::Vec3b>(i, j)[0];
+			grayImg.at<uchar>(i, j) = (uchar)round(value);
+		}
+	}
 
 	// convert cv::Mat to arma::Mat<uchar>
-	arma::Mat<uchar> armaImg(grayImg.data, grayImg.rows, grayImg.cols);
+	arma::Mat<uchar> armaImg(grayImg.data, grayImg.cols, grayImg.rows);
 	arma::inplace_trans(armaImg);
 
 	// compare whether I equals grayImg

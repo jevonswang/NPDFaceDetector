@@ -44,7 +44,7 @@ void runDetect(){
 
 	string modelFile = "F:\\NDPData\\model\\model_frontal.txt";
 	//string modelFile = "F:\\NDPData\\model\\model_unconstrain.txt";
-	string imgFile = "F:\\NDPData\\images\\lena.jpg";
+	string imgFile = "F:\\NDPData\\images\\img_1194.jpg";
 
 	NPDModel npdModel;
 	loadModelFile(modelFile, npdModel);
