@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "structs.h"
-
 #include "NPDScan.h"
 #include "Partition.h"
 

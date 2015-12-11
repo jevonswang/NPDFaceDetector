@@ -1,44 +1,6 @@
 #include "NPDScan.h"
 
-//void NDPScan(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat, int minFace=40, int maxFace=3000, int numThreads=4){
-
-	/*
-	candi_rects
-		<< 345 << 291 << 29 << 8.72495 << arma::endr
-		<< 343 << 289 << 35 << 7.31841 << arma::endr
-		<< 249 << 265 << 86 << 12.6732 << arma::endr
-		<< 253 << 265 << 86 << 7.31705 << arma::endr
-		<< 257 << 265 << 86 << 7.48613 << arma::endr
-		<< 253 << 269 << 86 << 10.2783 << arma::endr
-		<< 257 << 269 << 86 << 11.3665 << arma::endr
-		<< 261 << 269 << 86 << 8.71551 << arma::endr
-		<< 257 << 273 << 86 << 11.4430 << arma::endr
-		<< 251 << 251 << 103 << 8.96759 << arma::endr
-		<< 241 << 256 << 103 << 9.88374 << arma::endr
-		<< 246 << 256 << 103 << 14.7536 << arma::endr
-		<< 251 << 256 << 103 << 9.85131 << arma::endr
-		<< 241 << 261 << 103 << 10.9335 << arma::endr
-		<< 246 << 261 << 103 << 9.62250 << arma::endr
-		<< 251 << 261 << 103 << 11.6838 << arma::endr
-		<< 256 << 261 << 103 << 8.80227 << arma::endr
-		<< 246 << 266 << 103 << 10.9474 << arma::endr
-		<< 235 << 241 << 124 << 11.4615 << arma::endr
-		<< 229 << 247 << 124 << 7.55402 << arma::endr
-		<< 235 << 247 << 124 << 16.6715 << arma::endr
-		<< 247 << 247 << 124 << 12.8067 << arma::endr
-		<< 232 << 225 << 149 << 7.88044 << arma::endr
-		<< 239 << 225 << 149 << 8.81577 << arma::endr
-		<< 246 << 225 << 149 << 8.73358 << arma::endr
-		<< 232 << 232 << 149 << 7.79533 << arma::endr
-		<< 239 << 232 << 149 << 11.9822 << arma::endr
-		<< 225 << 239 << 149 << 11.4714 << arma::endr
-		<< 232 << 239 << 149 << 15.4952 << arma::endr
-		<< 239 << 239 << 149 << 8.59414 << arma::endr
-		<< 233 << 225 << 178 << 8.12269 << arma::endr
-		<< 225 << 233 << 178 << 9.48288 << arma::endr;
-	*/
-
 	
 	// Set the number of threads
 	//int numProcs = omp_get_num_procs();
@@ -57,33 +19,21 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	
 	// get numStages
 	int numStages = npdModel.numStages;
-	//cout << "numStages: " << numStages << endl;
 
 	// get numLeafNodes
 	int numLeafNodes = npdModel.numLeafNodes;
-	//cout << "numLeafNodes: " << numLeafNodes << endl;
-	
+
 	// get numBranchNodes
 	int numBranchNodes = npdModel.numBranchNodes;
-	//cout << "numBranchNodes: " << numBranchNodes << endl;
 
 	// get stageThreshold
 	const double *pStageThreshold = npdModel.stageThreshold.memptr();
-	//cout << "stageThreshold:" << endl;
-	//for (int i = 0; i < numStages; i++){
-	//	cout << *(pStageThreshold++) << endl;
-	//}
 
 	// get treeRoot
 	const int *pTreeRoot = (int *)npdModel.treeRoot.memptr();
-	//cout << "treeRoot:" << endl;
-	//for (int i = 0; i < numStages; i++){
-	//	cout << *(pTreeRoot++) << endl;
-	//}
 
 	// get numScales
 	int numScales = npdModel.numScales;
-	//cout << "numScales: " << numScales << endl;
 
 	// get pixel1 and pixel2
 	vector<int *> ppPoints1(numScales);
@@ -95,7 +45,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 		ppPoints1[i] = ppPoints1[i - 1] + numBranchNodes;
 		ppPoints2[i] = ppPoints2[i - 1] + numBranchNodes;
 	}
-
 
 	// get cutpoint
 	const int* ppCutpoint[2];
@@ -109,7 +58,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 
 	// get npdTable
 	vector<int *> ppNpdTable(256);
-	//arma::umat npdTable = npdModel.npdTable.t();
 	ppNpdTable[0] = (int *)npdModel.npdTable.memptr();
 	for (int i = 1; i < 256; i++) ppNpdTable[i] = ppNpdTable[i - 1] + 256;
 
@@ -122,7 +70,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	int height = imgMat.n_rows;
 	int width = imgMat.n_cols;
 
-	//arma::Mat<uchar> transI = imgMat.t();
 	const unsigned char *I = imgMat.memptr();
 	
 
@@ -136,7 +83,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 	// containers for the detected faces
 	vector<double> row, col, size, score;
 
-	//int count = 0;
 	for (int k = 0; k < numScales; k++) // process each scale
 	{
 		if (pWinSize[k] < minFace) continue;
@@ -160,16 +106,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 
 			p2 += gap;
 		}
-
-		/*
-		// offset is okay
-		if (count == 0){
-			for (int i = 0; i < offset.size(); i++){
-				printf("%d:%d\n",i,offset[i]);
-			}
-			count++;
-		}
-		*/
 
 		int colMax = width - pWinSize[k] + 1;
 		int rowMax = height - pWinSize[k] + 1;
@@ -200,17 +136,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 						unsigned char fea = ppNpdTable[p1][p2];
 						//printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(ppCutpoint[0][node]), int(ppCutpoint[1][node]));
 
-						/*
-						// for test
-						if (count < 10){
-							printf("%d: ppPoints1[%d][%d]=%d  ", count, k, node, ppPoints1[k][node]);
-							printf("offset[ppPoints1[k][node]]=%d  ", offset[ppPoints1[k][node]]);
-							printf("pPixel[offset[ppPoints1[k][node]]]=%d .\n", pPixel[offset[ppPoints1[k][node]]]);
-							//printf("node = %d, fea = %d, cutpoint = (%d, %d)\n", node, int(fea), int(ppCutpoint[0][node]), int(ppCutpoint[1][node]));
-							count++;
-						}
-						*/
-
 						if (fea < ppCutpoint[0][node] || fea > ppCutpoint[1][node]) node = pLeftChild[node];
 						else node = pRightChild[node];
 					}
@@ -230,7 +155,7 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 					double _col = c + 1;
 					double _size = pWinSize[k];
 
-					//#pragma omp critical // modify the record by a single thread
+					#pragma omp critical // modify the record by a single thread
 					{
 						row.push_back(_row);
 						col.push_back(_col);
@@ -244,7 +169,6 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 
 	int numFaces = (int)row.size();
 
-	//if (numFaces == 0) return true;
 	candi_rects.set_size(numFaces, 4);
 	for (int i = 0; i < numFaces; i++){
 		candi_rects(i, 0) = row.at(i);
@@ -253,7 +177,7 @@ bool NPDScan(arma::mat &candi_rects, NPDModel &npdModel, arma::Mat<uchar> imgMat
 		candi_rects(i, 3) = score.at(i);
 	}
 
-	candi_rects.print("candi_rects:");
+	//candi_rects.print("candi_rects:");
 	
 	return true;
 }

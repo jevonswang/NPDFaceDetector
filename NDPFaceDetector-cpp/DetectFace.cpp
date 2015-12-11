@@ -3,12 +3,6 @@
 
 bool Logistic(arma::vec &candi_rects_score, arma::vec &weight){
 	weight = arma::log(1 + arma::exp(candi_rects_score));
-	/*
-	for (int i = 0; i < candi_rects_score.n_elem; i++){
-		weight[i] = log(1 + exp(candi_rects_score[i]));
-	}
-	*/
-
 	return true;
 }
 
@@ -37,12 +31,20 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 	arma::inplace_trans(armaImg);
 
 	// compare whether I equals grayImg
-	armaImg(0,0,arma::size(10,10)).print("armaImg=");
-	cout << grayImg(cv::Range(0, 10), cv::Range(0, 10)) << endl;
+	//armaImg(0,0,arma::size(10,10)).print("armaImg=");
+	//cout << grayImg(cv::Range(0, 10), cv::Range(0, 10)) << endl;
 
 	// get candidate rects
 	arma::mat candi_rects;// col[0]:row,col[1]:col,col[2]:size,col[3]:score 
+
+	clock_t start, end;
+	start = clock();
 	NPDScan(candi_rects, npdModel, armaImg, minFace, maxFace, numThreads);
+	end = clock();
+	double dur = (double)(end - start);
+	printf("scan time:%f s\n", (dur / CLOCKS_PER_SEC));
+
+	
 
 	//candi_rects.print("candi_rects:");
 
@@ -209,7 +211,7 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 		}
 	}
 
-	rects.print("rects:");
+	//rects.print("rects:");
 	for (int i = 0; i < rects.n_rows; i++){
 		cv::Rect r(rects(i,1),rects(i,0),rects(i,6),rects(i,5));
 		detected_rects.push_back(r);

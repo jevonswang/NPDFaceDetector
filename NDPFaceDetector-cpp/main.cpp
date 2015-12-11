@@ -7,52 +7,29 @@
 #include "clapack.h"
 #include "structs.h"
 #include "DetectFace.h"
-#include "TrainDetector.h"
 #include "LoadMat.h"
 
 using namespace std;
 
-void runTrain(){
-	Options options;
-
-	options.objSize = 20; // size of the face detection template
-	options.negRatio = 1; // factor of bootstrap nonface samples.For example,
-	// negRatio = 2 means bootstrapping two times of nonface samples w.r.t face samples.
-	options.finalNegs = 100; // the minimal number of bootstrapped nonface samples.
-	// The training will be stopped if there is no enough nonface samples in the
-	// final stage.This is also to avoid overfitting.
-	options.numFaces = INT_MAX; // the number of face samples to be used for training.
-	// Inf means to use all face samples.
-	options.numThreads = 24; // the number of computing threads for bootstrapping
-
-	options.boostOpt.treeLevel = 4; // the maximal depth of the DQT trees to be learned
-	options.boostOpt.maxNumWeaks = 4000; // maximal number of weak classifiers to be learned
-	options.boostOpt.minDR = 1.0; // minimal detection rate required
-	options.boostOpt.maxFAR = 1e-16; // maximal FAR allowed; stop the training if reached
-	options.boostOpt.minSamples = 100; // minimal samples required to continue training. 1000 is preferred in practice
-	// for other options to control the learning, please see LearnGAB.m.
-
-	string faceDBFile = "..\\data\\FaceDB.mat";
-	string nonfaceDBFile = "..\\data\\NonfaceDB.mat";
-	string outFile = "..\\result.mat";
-
-	NPDModel npdModel = TrainDetector(faceDBFile, nonfaceDBFile, outFile, options);
-}
-
 void runDetect(){
-
 
 	string modelFile = "F:\\NDPData\\model\\model_frontal.txt";
 	//string modelFile = "F:\\NDPData\\model\\model_unconstrain.txt";
-	string imgFile = "F:\\NDPData\\images\\img_1194.jpg";
+	string imgFile = "F:\\NDPData\\images\\lena.jpg";
 
 	NPDModel npdModel;
 	loadModelFile(modelFile, npdModel);
 
 	cv::Mat img = cv::imread(imgFile);
 	vector<cv::Rect> rects;
+
+	clock_t start, end;
+	start = clock();
 	DetectFace(rects, npdModel, img);
-	
+	end = clock();
+	double dur = (double)(end - start);
+	printf("detect time:%f s\n", (dur / CLOCKS_PER_SEC));
+
 	int numFaces = rects.size();
 	printf("%d faces detected.\n", numFaces);
 
@@ -73,22 +50,6 @@ void runDetect(){
 
 int main(int argc, char* argv[]){
 	
-
-
 	runDetect();
-	/*
-	cout << "Press t to train model, press d to detect face.\n" << endl;
-	char ch;
-	cin >> ch;
-	if (ch == 't'){
-		runTrain();
-	}
-	else if (ch == 'd'){
-		runDetect();
-	}
-	else{
-		cout << "bad input." << endl;
-	}
-	*/
 	return 0;
 }
