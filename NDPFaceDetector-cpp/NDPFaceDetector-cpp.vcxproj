@@ -46,8 +46,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\opencv\build\include;E:\opencv\build\include\opencv;E:\opencv\build\include\opencv2;E:\Libraries\armadillo-6.200.4\include;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\opencv\build\x86\vc12\lib;E:\Libraries\LAPACK and BLAS;$(LibraryPath)</LibraryPath>
+    <IncludePath>E:\opencv3\build\include;E:\opencv3\build\include\opencv;E:\opencv3\build\include\opencv2;E:\Libraries\armadillo-6.200.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\opencv3\build\x86\vc12\lib;E:\Libraries\LAPACK and BLAS;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -74,6 +74,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OpenMPSupport>true</OpenMPSupport>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@
     <ClInclude Include="LoadMat.h" />
     <ClInclude Include="NPDScan.h" />
     <ClInclude Include="Partition.h" />
+    <ClInclude Include="ShapePredictor.h" />
     <ClInclude Include="structs.h" />
   </ItemGroup>
   <ItemGroup>

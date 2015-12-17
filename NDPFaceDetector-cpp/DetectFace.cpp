@@ -6,7 +6,7 @@ bool Logistic(arma::vec &candi_rects_score, arma::vec &weight){
 	return true;
 }
 
-bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &img){
+bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &grayImg){
 
 	// initialize parameters
 	int minFace = 20;
@@ -14,17 +14,7 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 	double overlappingThreshold = 0.5;
 	int numThreads = 24;
 
-	// trun the img to gray
-	cv::Mat grayImg(img.size(),CV_8UC1);
-	//cvtColor(img,grayImg,cv::COLOR_RGB2GRAY);
-	for (int i = 0; i < img.rows; i++){
-		for (int j = 0; j < img.cols; j++){
-			double value = 0.2989 * img.at<cv::Vec3b>(i, j)[2] 
-						 + 0.5870 * img.at<cv::Vec3b>(i, j)[1] 
-						 + 0.1140 * img.at<cv::Vec3b>(i, j)[0];
-			grayImg.at<uchar>(i, j) = (uchar)round(value);
-		}
-	}
+
 
 	// convert cv::Mat to arma::Mat<uchar>
 	arma::Mat<uchar> armaImg(grayImg.data, grayImg.cols, grayImg.rows);
@@ -187,8 +177,8 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &i
 	
 
 	// check borders
-	int height = img.rows;
-	int width = img.cols;
+	int height = grayImg.rows;
+	int width = grayImg.cols;
 	int numFaces = rects.n_rows;
 
 	for (int i = 0; i < numFaces; i++){
