@@ -27,12 +27,12 @@ bool DetectFace(vector<cv::Rect> &detected_rects, NPDModel &npdModel, cv::Mat &g
 	// get candidate rects
 	arma::mat candi_rects;// col[0]:row,col[1]:col,col[2]:size,col[3]:score 
 
-	clock_t start, end;
-	start = clock();
+	//clock_t start, end;
+	//start = clock();
 	NPDScan(candi_rects, npdModel, armaImg, minFace, maxFace, numThreads);
-	end = clock();
-	double dur = (double)(end - start);
-	printf("scan time:%f s\n", (dur / CLOCKS_PER_SEC));
+	//end = clock();
+	//double dur = (double)(end - start);
+	//printf("scan time:%f s\n", (dur / CLOCKS_PER_SEC));
 
 	
 
