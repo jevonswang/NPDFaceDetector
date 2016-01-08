@@ -66,10 +66,16 @@ void runDetect(){
 	vector<cv::Mat> images;
 	LoadImages(imgFile, images);
 
-	for (int i = 0; i < images.size(); i++){
+	cv::VideoCapture videoCapture(0);
 
+	while (1){
+	//for (int i = 0; i < images.size(); i++){
+
+		cv::Mat img;
+		videoCapture >> img;
+		
 		// load image and turn it to gray
-		cv::Mat img = images[i];
+		//cv::Mat img = images[i];
 		cv::Mat grayImg(img.size(), CV_8UC1);
 		//cvtColor(img, grayImg, cv::COLOR_RGB2GRAY);
 		
@@ -93,7 +99,7 @@ void runDetect(){
 		printf("detect time:%f s\n", (dur / CLOCKS_PER_SEC));
 		int numFaces = rects.size();
 		printf("%d faces detected.\n", numFaces);
-
+		 
 
 
 		if (numFaces > 0){
@@ -113,7 +119,7 @@ void runDetect(){
 		}
 
 		cv::imshow("result", img);
-		cv::waitKey();
+		cv::waitKey(10);
 	}
 }
 

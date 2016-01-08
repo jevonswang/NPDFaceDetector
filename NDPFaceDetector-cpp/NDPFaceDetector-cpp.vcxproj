@@ -85,9 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="clapack.h" />
     <ClInclude Include="DetectFace.h" />
-    <ClInclude Include="f2c.h" />
     <ClInclude Include="LoadMat.h" />
     <ClInclude Include="NPDScan.h" />
     <ClInclude Include="Partition.h" />

@@ -15,13 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="clapack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DetectFace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="f2c.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="structs.h">
